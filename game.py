@@ -23,7 +23,7 @@ class Movil():
 
     @derecha.setter
     def derecha(self, valor):
-         self.x + self.w
+        self.x = self.x - self.w
 
     @property
     def izquierda(self):
@@ -68,7 +68,7 @@ class Raqueta(Movil):
             self.y += 5
 
         if self.arriba <= 0:
-            self.y = 0
+            self.arriba = 0
 
         if self.abajo >= TAMANNO[1]:
             self.abajo = TAMANNO[1]
@@ -85,8 +85,8 @@ class Bola(Movil):
         #self.w = w
         #self.h = h
         #self.color = color
-        self.derecha = True
-        self.arriba = True
+        #self.BoolDerecha = True
+        #self.BoolArriba = True
 
         self.incrementox = 5
         self.incrementoy = 5
@@ -120,16 +120,17 @@ class Bola(Movil):
         #self.y -= 5
         """
 
-        self.x += self.incrementox
-        self.y += self.incrementoy
+        self.izquierda += self.incrementox
+        self.arriba += self.incrementoy
 
-        if self.x + self.w > TAMANNO[0] or self.x < 0:
+        if self.derecha > TAMANNO[0] or self.izquierda < 0:
             self.incrementox *= -1
 
-        if self.y + self.h > TAMANNO[1] or self.y < 0:
+        if self.abajo > TAMANNO[1] or self.arriba < 0:
             self.incrementoy *= -1
 
-
+    def comprobar_choque(self, objeto):
+        return self.derecha >= objeto.izquierda and self.izquierda <= objeto.derecha and self.abajo >= objeto.arriba and self.arriba <= objeto.abajo
 
 class Game():
 
@@ -151,14 +152,14 @@ class Game():
 
         for i in range(1):
             #tamanyo = randrange(10,41)
-            bola = Bola(TAMANNO[0] // 2 -10, 
+            self.bola = Bola(TAMANNO[0] // 2 -10, 
                                         TAMANNO[1] // 2 - 10,
                                         (randrange(256),randrange(256),randrange(256)))
             
-            self.derecha = randrange(2)==1
-            self.arriba = randrange(2)==1
+            #self.BoolDerecha = randrange(2)==1
+            #self.BoolArriba = randrange(2)==1
             #self.bolas.append(bola)
-            self.moviles.append(bola)
+            self.moviles.append(self.bola)
 
             #self.players.append(self.player1)
             #self.players.append(self.player2)
@@ -217,8 +218,16 @@ class Game():
                 self.bolas[i].actualizate()'''
 
             for movil in self.moviles:
-                movil.procesa_eventos()
+                movil.procesa_eventos(eventos)
+
+            if  self.bola.comprobar_choque(self.player1) or self.bola.comprobar_choque(self.player2):
+                self.bola.incrementox *= -1
+
+
+            for movil in self.moviles:    
                 movil.actualizate()
+
+
             
 
             self.pantalla.fill((0,0,0))
